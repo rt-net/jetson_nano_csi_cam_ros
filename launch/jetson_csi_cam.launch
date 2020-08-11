@@ -11,6 +11,7 @@
   <arg name="height" default="270" />                        <!-- Image Height to stream -->
   <arg name="fps" default="30" />                            <!-- Desired framerate. True framerate may not reach this if set too high. -->
   <arg name="flip_method" default="0" />                     <!-- flip_method -->
+  <arg name="load_camera_info" default="true" />             <!-- Load the camera info or not-->
 
   <!-- Make arguments available to parameter server -->
   <param name="$(arg cam_name)/camera_id" type="int" value="$(arg sensor_id)" />
@@ -19,7 +20,7 @@
   <param name="$(arg cam_name)/target_fps" type="int" value="$(arg fps)" />
 
   <!-- Define the camera calibration parameter -->
-  <param name="$(arg cam_name)/camera_info_url" type="string"
+  <param name="$(arg cam_name)/camera_info_url" type="string" if="$(arg load_camera_info)"
     value="package://jetson_nano_csi_cam/config/sainsmart-imx219-jetson-nano-160deg-fov-cam$(arg sensor_id).yaml" />
 
   <!-- Define the GSCAM pipeline -->
