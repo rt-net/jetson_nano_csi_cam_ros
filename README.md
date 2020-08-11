@@ -143,7 +143,7 @@ rostopic hz /csi_cam_0/image_raw
 
 * Jetson Nanoの[PowerManagement](https://www.jetsonhacks.com/2019/04/10/jetson-nano-use-more-power/)が省電力モード等パフォーマンスを制限するモードになっている
 * Jetson Nanoから映像受信しているコンピュータ間を接続するネットワークが不安定
-* 接続しているカメラモジュールで取得可能なフレームレートを超えた値を指定した
+* 接続しているカメラモジュールで取得可能なフレームレートを超えた値がlaunchファイルで指定されている
 
 ### カメラのキャリブレーション
 `jetson_nano_csi_cam`はカメラのキャリブレーションを簡単にできるようにカメラ情報もROSトピックとして配信するようにしています。
