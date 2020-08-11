@@ -1,152 +1,183 @@
-# Nvidia Jetson CSI camera launcher for ROS
+# jetson_nano_csi_cam
 
-<p align="left"><a href="http://petermoran.org/csi-cameras-on-tx2/"><img src="https://img.shields.io/badge/CSI_Cameras_on_the_TX2_(The_Easy_Way)-Learn_more_at_my_blog-blue.svg?style=social"></a></p> 
+Jetson Nano DevKit B01 + dual CSI cameraのROSドライバです。
 
-This ROS package makes it simple to use CSI cameras on the Nvidia Jetson TK1, TX1, or TX2 with ROS via gstreamer and the Nvidia multimedia API. This is done by properly configuring [`gscam`](http://wiki.ros.org/gscam) to work with the Nvidia hardware.
+このROSパッケージはJetson Nano DevKit B01に取り付けたCSI camera（1つまたは2つ）を[GStreamer](https://github.com/GStreamer/gstreamer)または[Jetson Linux Multimedia API](https://docs.nvidia.com/jetson/l4t-multimedia/index.html)経由でROSの[sensor_msgs/Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)として配信するためのものです。  
 
-**Features**
+launchファイルで[`gscam`](http://wiki.ros.org/gscam)を呼び出し、GStreamerまたはJetson Linux Multimedia APIを経由して
 
-* Control resolution and framerate.
-* Camera calibration support.
-* Works efficiently, allowing for high resolution and/or high fps video by taking advantage of gstreamer and the Nvidia multimedia API.
-* Multi camera support.
+* 解像度とフレームレートの設定
+* カメラのキャリブレーション
+* 複数のCSIカメラ画像の取得・配信
+
+を実現しています。
 
 ---
 
-# Installation
+## インストール方法
 
-In order to get started, you will need to download the `jetson_csi_cam`  repository as well as its dependencies. Just follow the steps below and you should be good to go.
+`jetson_nano_csi_cam`を動かすためには本リポジトリとその依存関係にあるソフトウェアをダウンロードします。
 
-If you'd like to learn more about `gscam`, check out their [ROS wiki page](http://wiki.ros.org/gscam) or their [Github repository](https://github.com/ros-drivers/gscam).
+`gscam`の詳細については、[ROS Wiki](http://wiki.ros.org/gscam)または[ros-drivers/gscam@GitHub](https://github.com/ros-drivers/gscam)を参照してください。
 
-**Note:** This package was tested on a Nvidia Jetson TX2 with L4T R27.1, ROS Kinetic, and the [Leopard Imaging IMX377CS](https://www.leopardimaging.com/LI-JETSON-KIT-IMX377CS-X.html) CSI camera.
+以下のソフトウェアがインストールされたNVIDIA Jetson Nano DevKit B01に[SainSmart IMX219 Camera Module for NVIDIA Jetson Nano Board (160 Degree FoV)](https://www.sainsmart.com/products/sainsmart-imx219-camera-module-for-nvidia-jetson-nano-board-8mp-sensor-160-degree-fov)を2つ接続して動作確認をしています。
 
-## Dependencies
+* [L4T R32.4.2](https://developer.nvidia.com/embedded/linux-tegra-r32.4.2) + [ROS Melodic](http://wiki.ros.org/melodic)
 
-For the purpose of this guide, we will assume you already have:
+### 依存関係
 
-* Gstreamer-1.0 and the Nvidia multimedia API (typically installed by Jetpack)
-* ROS Kinetic
-  * Older versions of ROS may work, provided that a version of  `gscam` that supports gstreamer-1.0 is available for that ROS version, but this is untested.
-* `gscam` with gstreamer-1.0 support.
-  * The following steps will show how to build `gscam` from source to support this, so don't worry about it yet.
+* GStreamer-1.0 または Jetson Linux Multimedia API（JetPackとともにインストールされます）
+* ROS Melodic
+* GStreamer-1.0をサポートした`gscam`
 
-With these dependencies accounted for, lets get everything installed.
+### 1. `jetson_nano_csi_cam`のダウンロード
 
-## 1. Download `jetson_csi_cam`
-
-Clone this repository into you `catkin_workspace`.
+このリポジトリを`catkin_ws`にダウンロードします。
 
 ```
-cd ~/catkin_workspace/src
-git clone https://github.com/peter-moran/jetson_csi_cam.git 
+cd ~/catkin_ws/src
+git clone https://github.com/rt-net/jetson_nano_csi_cam_ros.git 
 ```
 
-## 2. Install `gscam` with gstreamer-1.0 support
+### 2. `gscam`のダウンロードとGStreamer-1.0対応
 
-Clone `gscam` into your `catkin_workspace`.
+`gscam`を`catkin_ws`にダウンロードします。
 
 ```
-cd ~/catkin_workspace/src
+cd ~/catkin_ws/src
 git clone https://github.com/ros-drivers/gscam.git
 ```
 
-Then edit `./gscam/Makefile` and add the CMake flag `-DGSTREAMER_VERSION_1_x=On` to the first line of the file, so that it reads:
+ダウンロード後、`./gscam/Makefile`を編集してCMakeのオプションを変更します。以下のように`-DGSTREAMER_VERSION_1_x=On`を追加します。
 
     EXTRA_CMAKE_FLAGS = -DUSE_ROSBUILD:BOOL=1 -DGSTREAMER_VERSION_1_x=On
 
-While this flag is only necessary if you have both `gstreamer-0.1` and `gstreamer-1.0` installed simultaneously, it is good practice to include.
-
-## 3. Build everything
-
-Now we build and register `gscam` and `jetson_csi_cam` in ROS.
+ダウンロードしてきた`gscam`ディレクトリ内で以下のコマンドを実行すると簡単に編集できます。
 
 ```
-cd ~/catkin_workspace
-catkin_make
-source ~/.bashrc
+sed -e "s/EXTRA_CMAKE_FLAGS = -DUSE_ROSBUILD:BOOL=1$/EXTRA_CMAKE_FLAGS = -DUSE_ROSBUILD:BOOL=1 -DGSTREAMER_VERSION_1_x=On/" -i Makefile
 ```
 
-At this point everything should be ready to go.
+### 3. ビルド＆セットアップ
+
+`jetson_nano_csi_cam`と`gscam`をビルドしセットアップします。
+
+```
+cd ~/catkin_ws
+catkin build
+source devel/setup.bash
+```
 
 ---
 
-# Usage
+## 使い方
 
-> **TL;DR:** To publish the camera stream to the ROS topic `/csi_cam_0/image_raw`, use this command in the terminal:
->
-> ```
-> roslaunch jetson_csi_cam jetson_csi_cam.launch width:=<image width> height:=<image height> fps:=<desired framerate>
-> ```
-> If you have another camera on your Jetson TX2, to publish the other camera stream to the ROS topic `/csi_cam_1/image_raw`, use this command in the terminal:
->
-> ```
-> roslaunch jetson_csi_cam jetson_csi_cam.launch sensor_id:=1 width:=<image width> height:=<image height> fps:=<desired framerate>
-> ```
-> If you would like to learn more of the details, read ahead.
+### Quick Start
 
-## Capturing Video
+CAM0として接続されたカメラストリームのデータを`/csi_cam_0/image_raw`のROSトピックとして配信するには以下のコマンドをターミナルで実行します。
 
-### Turning on the video stream
+```
+roslaunch jetson_nano_csi_cam jetson_csi_cam.launch sensor_id:=0 width:=<image width> height:=<image height> fps:=<desired framerate>
+```
 
-To publish your camera's video to ROS (using the default settings) execute the following:
+CAM0とCAM1に接続されたカメラストリームのデータをそれぞれ`/csi_cam_0/image_raw`と`/csi_cam_1/image_raw`のROSトピックとして同時に配信するには以下のコマンドを実行します。
+
+```
+roslaunch jetson_nano_csi_cam jetson_dual_csi_cam.launch width:=<image width> height:=<image height> fps:=<desired framerate>
+```
+
+### 映像取得・配信
+
+#### 映像配信
+
+ROSトピックとしてカメラの映像を配信するには以下のコマンドを実行します。
 
 ```
 roslaunch jetson_csi_cam jetson_csi_cam.launch
 ```
 
-> **Wait, where is the video?** This launch file only *publishes* the video to ROS, making it available for other programs to use. This is because we don't want to view the video every time we use the camera (eg the computer may be processing it first). Thus we use separate programs to view it. I'll discuss this in a later section, but if you can't wait, run `rqt_image_view` in a new terminal to see the video.
+このlaunchでは配信用のノードを起動するだけです。配信されている映像を確認するには何かしら別の手段を利用します。  
+映像が配信されているかを簡単に確認するには、端末を起動して`rostopic list`とコマンドを実行し、`/csi_cam_0/image_raw`という名前のROSトピックが配信されていることを確認するという方法があります。
 
-You can confirm the video is running by entering `rostopic list` in the terminal. You should be able to see the  `/csi_cam/image_raw` topic (aka your video) along with a bunch of other topics with similar names -- unless you changed the `camera_name` argument from the default.
+#### オプション
 
-### Setting video options
-
-Most of the time we'll want to use settings other than the defaults. We can easily change these by passing command line arguments to `roslaunch`. For example, if I want the camera to run at 4k resolution at 15 fps, I would use the following:
-
-```
-roslaunch jetson_csi_cam jetson_csi_cam.launch width:=3840 height:=2160 fps:=15
-```
-
-In other words, to set any of the arguments use the `<arg_name>:=<arg_value>` options for `roslaunch`.
-
-#### Accepted arguments for `jetson_csi_cam.launch`
-
-* `sensor_id` -- The sensor id of each camera
-* `width` -- Image Width
-* `height` -- Image Height
-* `fps` -- Desired framerate. True framerate may not reach this if set too high.
-* `cam_name` -- The name of the camera (corrsponding to the camera info).
-* `frame_id` -- The TF frame ID for the camera.
-* `sync_sink` -- Whether to synchronize the app sink. Setting this to false may resolve problems with sub-par framerates.
-
-## Testing your video stream
-
-### View the video
-
-To view the video, simply run `rqt_image_view` in a new terminal. A window will pop up and the video should be inside. You may need to go to the pulldown in the top left to choose your camera's video topic, by default you want to use  `/csi_cam/image_raw`.
-
-### Calculate true framerate
-
-To check the true framerate of your video you can use the `rostopic hz` tool, which shows the frequency any topic is published at.
+`roslaunch`する際のオプションで映像配信のパラメータを決めることができます。
 
 ```
-rostopic hz /csi_cam/image_raw
+roslaunch jetson_csi_cam jetson_csi_cam.launch width:=1920 height:=1080 fps:=15
 ```
 
-When the true framerate is below the framerate you asked for, it is either because the system cannot keep up or the camera does not have that setting. If you are using the Nvidia Jetson TX2, you can get higher resolution video at higher true FPS by switching to a [higher power mode](http://www.jetsonhacks.com/2017/03/25/nvpmodel-nvidia-jetson-tx2-development-kit/). It can also be good to dial back your requested FPS to be close or slightly above to your true FPS.
+その他の引数については`roslaunch`の際に`<arg_name>:=<arg_value>`形式でオプションを指定できます。
 
-## Camera Calibration
+##### `jetson_csi_cam.launch`の引数
 
-The `jetson_csi_cam` package is set up to make camera calibration very simple. To calibrate your camera, all you need to do is follow the [monocular camera calibration guide](http://wiki.ros.org/camera_calibration/Tutorials/MonocularCalibration) on the ROS wiki, with the following notes:
+* **`sensor_id`** (default: `0`) -- カメラのID
+* **`width`** (default: `480`) -- 配信する映像の横幅
+* **`height`** (default: `270`) -- 配信する映像の高さ
+* **`cap_width`** (default: `1920`) -- カメラから取得する映像の横幅
+* **`cap_height`** (default: `1080`) -- カメラから取得する映像の高さ
+* **`fps`** (default: `30`) -- 配信するフレームレート（解像度次第ではこのフレームレートに満たない場合があります）
+* **`cam_name`** (default: `csi_cam_$(arg sensor_id)`) -- `camera info`に対応したカメラ名
+* **`frame_id`** (default: `/$(arg cam_name)_link`) -- tfに使用するカメラのフレーム名
+* **`sync_sink`** (default: `true`) -- [appsink](https://gstreamer.freedesktop.org/documentation/app/appsink.html?gi-language=c)を同期させるかどうか。フレームレートが低い場合に問題が起きたときにこのオプションを`false`に設定すると、問題が解決する場合があります。
+* **`flip_method`** (default: `0`) -- 映像配信する際の画像の反転オプション
 
-* As the guide states, you'll need a printout of a chessboard. If you want something quick, use this [chessboard for 8.5"x11" paper](http://www.vision.caltech.edu/bouguetj/calib_doc/htmls/pattern.pdf) with an 8x6 grid. Please note: while there are nine by seven *squares*, we use a size of 8x6 because we are counting the *internal vertices*. You will need to measure the square size yourself since printing will slightly distort the chessboard size, but the squares should be 30mm on each side.
+### 映像配信のテスト
 
-* In Step 2, make sure to start the camera via `roslaunch` as discussed above.
+#### カメラ映像の確認
 
-* In Step 3, make sure to set your `image` and `camera` arguments correctly as below, also *make sure that the chessboard size and square size are set correctly* for your chessboard.
+簡単にカメラ映像を確認するには、GNOME等のデスクトップ環境で端末を起動して`rqt_img_view`を実行します。rqtの画像ビューアが起動します。  
+左上のプルダウンメニューからカメラ映像のトピックを選択します。`jetson_csi_cam.launch`のデフォルト設定の場合は`/csi_cam_0/image_raw`です。
 
-  ```
-  rosrun camera_calibration cameracalibrator.py --size 8x6 --square <square size in meters> image:=/csi_cam/image_raw camera:=/csi_cam
-  ```
+![](https://rt-net.github.io/images/jetson-nano/csi_cam_rqt_image_view.png)
 
-After following this guide and clicking **COMMIT** (as it tells you to do), your calibration data should be automatically published with your video under the topic `/csi_cam/camera_info`. Most other ROS packages needing this information will automatically recognize it.
+#### フレームレートの計測
+
+カメラ映像配信用ROSノードのROSトピックの更新頻度が配信されている映像のフレームレートとほぼ一致します。`rostopic hz`コマンドでROSトピックの更新頻度を確認できます。
+
+```
+rostopic hz /csi_cam_0/image_raw
+```
+
+設定したフレームレートよりも低い場合は以下の原因が考えられます。
+
+* Jetson Nanoの[PowerManagement](https://www.jetsonhacks.com/2019/04/10/jetson-nano-use-more-power/)が省電力モード等パフォーマンスを制限するモードになっている
+* Jetson Nanoから映像受信しているコンピュータ間を接続するネットワークが不安定
+* 接続しているカメラモジュールで取得可能なフレームレートを超えた値を指定した
+
+### カメラのキャリブレーション
+`jetson_nano_csi_cam`はカメラのキャリブレーションを簡単にできるようにカメラ情報もROSトピックとして配信するようにしています。
+ROS Wikiの[monocular camera calibration guide](http://wiki.ros.org/camera_calibration/Tutorials/MonocularCalibration)に従い、キャリブレーションを行うことができます。その際、以下の情報を参考にしてください。
+
+1. ROS Wikiの説明にあるようにチェッカーボードの印刷が必要です。
+
+2. [映像配信](#映像配信)にて説明した`roslaunch`コマンドでカメラの映像配信をします。
+
+3. `image`と`camera`オプションとチェッカーボードのサイズを以下のコマンドのように指定し、キャリブレーションを行います。
+
+```
+rosrun camera_calibration cameracalibrator.py --size 8x6 --square <square size in meters> image:=/csi_cam_0/image_raw camera:=/csi_cam_0
+```
+
+カメラに映る範囲内である程度チェッカーボードを動かすと「CALIBRATE」ボタンが押せるようになるので、キャリブレーションファイルを書き出します。
+
+![](https://rt-net.github.io/images/jetson-nano/camera_calibration.png)
+
+## ライセンス
+
+(C) 2020 RT Corporation
+
+各ファイルはライセンスがファイル中に明記されている場合、そのライセンスに従います。特に明記されていない場合は、Apache License, Version 2.0に基づき公開されています。  
+ライセンスの全文は[LICENSE](./LICENSE)または[apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)から確認できます。
+
+### 謝辞
+
+* [peter-moran/jetson_csi_cam](https://github.com/peter-moran/jetson_csi_cam)
+    * Copyright (c) 2017 Peter Moran
+    * MIT License
+    * https://github.com/peter-moran/jetson_csi_cam/blob/b4d839bdfca0e2714103c1d2fe3750f3a8f36832/LICENSE
+
+## 関連資料
+
+* [Accelerated GStreamer documentation on NVIDIA Jetson Linux Developer Guide](https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%2520Linux%2520Driver%2520Package%2520Development%2520Guide%2Faccelerated_gstreamer.html%23)
+* [Power Management for Jetson Nano and Jetson TX1 Devices on NVIDIA Jetson Linux Developer Guide](https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%20Linux%20Driver%20Package%20Development%20Guide/power_management_nano.html)
