@@ -129,7 +129,7 @@ roslaunch jetson_csi_cam jetson_csi_cam.launch width:=1920 height:=1080 fps:=15
 簡単にカメラ映像を確認するには、GNOME等のデスクトップ環境で端末を起動して`rqt_img_view`を実行します。rqtの画像ビューアが起動します。  
 左上のプルダウンメニューからカメラ映像のトピックを選択します。`jetson_csi_cam.launch`のデフォルト設定の場合は`/csi_cam_0/image_raw`です。
 
-![](https://rt-net.github.io/images/jetson_nano/csi_cam_rqt_image_view.png)
+![](https://rt-net.github.io/images/jetson-nano/csi_cam_rqt_image_view.png)
 
 #### フレームレートの計測
 
@@ -161,7 +161,7 @@ rosrun camera_calibration cameracalibrator.py --size 8x6 --square <square size i
 
 カメラに映る範囲内である程度チェッカーボードを動かすと「CALIBRATE」ボタンが押せるようになるので、キャリブレーションファイルを書き出します。
 
-![](https://rt-net.github.io/images/jetson_nano/camera_calibration.png)
+![](https://rt-net.github.io/images/jetson-nano/camera_calibration.png)
 
 ## ライセンス
 
