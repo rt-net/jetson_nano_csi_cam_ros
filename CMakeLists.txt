@@ -27,7 +27,7 @@ include_directories(
 ## Install ##
 #############
 
-foreach(dir launch)
+foreach(dir launch config)
   install(DIRECTORY ${dir}/ 
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir}
   )
