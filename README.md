@@ -119,7 +119,7 @@ roslaunch jetson_csi_cam jetson_csi_cam.launch width:=1920 height:=1080 fps:=15
 * **`fps`** (default: `30`) -- 配信するフレームレート（解像度次第ではこのフレームレートに満たない場合があります）
 * **`cam_name`** (default: `csi_cam_$(arg sensor_id)`) -- `camera info`に対応したカメラ名
 * **`frame_id`** (default: `/$(arg cam_name)_link`) -- tfに使用するカメラのフレーム名
-* **`sync_sink`** (default: `true`) -- [appsink](https://gstreamer.freedesktop.org/documentation/app/appsink.html?gi-language=c)を同期させるかどうか。フレームレートが低い場合に問題が起きたときにこのオプションを`false`に設定すると、問題が解決する場合があります。
+* **`sync_sink`** (default: `true`) -- [appsink](https://gstreamer.freedesktop.org/documentation/app/appsink.html?gi-language=c)を同期設定（フレームレートを低く設定して問題が起きたときにこのオプションを`false`にすると、問題が解決する場合があります）
 * **`flip_method`** (default: `0`) -- 映像配信する際の画像の反転オプション
 
 ### 映像配信のテスト
