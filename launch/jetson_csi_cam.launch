@@ -5,18 +5,23 @@
   <arg name="cam_name" default="csi_cam_$(arg sensor_id)" /> <!-- The name of the camera (corrsponding to the camera info) -->
   <arg name="frame_id" default="/$(arg cam_name)_link" />    <!-- The TF frame ID. -->
   <arg name="sync_sink" default="true" />                    <!-- Synchronize the app sink. Setting this to false may resolve problems with sub-par framerates. -->
-  <arg name="cap_width" default="1920" />                        <!-- Image Width -->
-  <arg name="cap_height" default="1080" />                       <!-- Image Height -->
-  <arg name="width" default="480" />                        <!-- Image Width -->
-  <arg name="height" default="270" />                       <!-- Image Height -->
+  <arg name="cap_width" default="1920" />                    <!-- Image Width to capture -->
+  <arg name="cap_height" default="1080" />                   <!-- Image Height to capture -->
+  <arg name="width" default="480" />                         <!-- Image Width to stream -->
+  <arg name="height" default="270" />                        <!-- Image Height to stream -->
   <arg name="fps" default="30" />                            <!-- Desired framerate. True framerate may not reach this if set too high. -->
-  <arg name="flip_method" default="0" />                            <!-- Desired framerate. True framerate may not reach this if set too high. -->
+  <arg name="flip_method" default="0" />                     <!-- flip_method -->
+  <arg name="load_camera_info" default="true" />             <!-- Load the camera info or not-->
 
   <!-- Make arguments available to parameter server -->
   <param name="$(arg cam_name)/camera_id" type="int" value="$(arg sensor_id)" />
   <param name="$(arg cam_name)/image_width" type="int" value="$(arg width)" />
   <param name="$(arg cam_name)/image_height" type="int" value="$(arg height)" />
   <param name="$(arg cam_name)/target_fps" type="int" value="$(arg fps)" />
+
+  <!-- Define the camera calibration parameter -->
+  <param name="$(arg cam_name)/camera_info_url" type="string" if="$(arg load_camera_info)"
+    value="package://jetson_nano_csi_cam/config/sainsmart-imx219-jetson-nano-160deg-fov-cam$(arg sensor_id).yaml" />
 
   <!-- Define the GSCAM pipeline -->
   <param name="$(arg cam_name)/gscam_config" type="string" value="nvarguscamerasrc sensor-id=$(arg sensor_id) ! video/x-raw(memory:NVMM),
