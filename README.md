@@ -2,7 +2,9 @@
 
 Jetson Nano DevKit B01 + dual CSI cameraのROSドライバです。
 
-このROSパッケージはJetson Nano DevKit B01に取り付けたCSI camera（1つまたは2つ）を[GStreamer](https://github.com/GStreamer/gstreamer)または[Jetson Linux Multimedia API](https://docs.nvidia.com/jetson/l4t-multimedia/index.html)経由でROSの[sensor_msgs/Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)として配信するためのものです。  
+![](https://rt-net.github.io/images/jetson-nano/jetson_nano_dual_csi.jpg)
+
+このROSパッケージはJetson Nano DevKit B01に取り付けたCSI camera（1つまたは2つ）の画像を[GStreamer](https://github.com/GStreamer/gstreamer)または[Jetson Linux Multimedia API](https://docs.nvidia.com/jetson/l4t-multimedia/index.html)経由で取得し、ROSの[sensor_msgs/Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)として配信するためのものです。  
 
 launchファイルで[`gscam`](http://wiki.ros.org/gscam)を呼び出し、GStreamerまたはJetson Linux Multimedia APIを経由して
 
@@ -74,7 +76,7 @@ source devel/setup.bash
 
 ### Quick Start
 
-CAM0として接続されたカメラストリームのデータを`/csi_cam_0/image_raw`のROSトピックとして配信するには以下のコマンドをターミナルで実行します。
+CAM0として接続されたカメラストリームのデータを`/csi_cam_0/image_raw`のROSトピックとして配信するには以下のコマンドを端末で実行します。
 
 ```
 roslaunch jetson_nano_csi_cam jetson_csi_cam.launch sensor_id:=0 width:=<image width> height:=<image height> fps:=<desired framerate>
@@ -97,7 +99,7 @@ roslaunch jetson_csi_cam jetson_csi_cam.launch
 ```
 
 このlaunchでは配信用のノードを起動するだけです。配信されている映像を確認するには何かしら別の手段を利用します。  
-映像が配信されているかを簡単に確認するには、端末を起動して`rostopic list`とコマンドを実行し、`/csi_cam_0/image_raw`という名前のROSトピックが配信されていることを確認するという方法があります。
+映像が配信されているかを簡単に確認するには、端末を起動して`rostopic list`を実行し、配信中のROSトピック一覧から`/csi_cam_0/image_raw`という名前のトピックを探します。
 
 #### オプション
 
@@ -119,35 +121,38 @@ roslaunch jetson_csi_cam jetson_csi_cam.launch width:=1920 height:=1080 fps:=15
 * **`fps`** (default: `30`) -- 配信するフレームレート（解像度次第ではこのフレームレートに満たない場合があります）
 * **`cam_name`** (default: `csi_cam_$(arg sensor_id)`) -- `camera info`に対応したカメラ名
 * **`frame_id`** (default: `/$(arg cam_name)_link`) -- tfに使用するカメラのフレーム名
-* **`sync_sink`** (default: `true`) -- [appsink](https://gstreamer.freedesktop.org/documentation/app/appsink.html?gi-language=c)を同期させるかどうか。フレームレートが低い場合に問題が起きたときにこのオプションを`false`に設定すると、問題が解決する場合があります。
+* **`sync_sink`** (default: `true`) -- [appsink](https://gstreamer.freedesktop.org/documentation/app/appsink.html?gi-language=c)を同期設定（フレームレートを低く設定して問題が起きたときにこのオプションを`false`にすると、問題が解決する場合があります）
 * **`flip_method`** (default: `0`) -- 映像配信する際の画像の反転オプション
 
 ### 映像配信のテスト
 
 #### カメラ映像の確認
 
-簡単にカメラ映像を確認するには、GNOME等のデスクトップ環境で端末を起動して`rqt_img_view`を実行します。rqtの画像ビューアが起動します。  
-左上のプルダウンメニューからカメラ映像のトピックを選択します。`jetson_csi_cam.launch`のデフォルト設定の場合は`/csi_cam_0/image_raw`です。
+簡単にカメラ映像を確認するには、GNOME等のデスクトップ環境で端末を起動して`rqt_img_view`を実行します。  
+起動した画像ビューアの左上のプルダウンメニューからカメラ映像のトピックを選択します。
+`jetson_csi_cam.launch`のデフォルト設定の場合は`/csi_cam_0/image_raw`です。
 
 ![](https://rt-net.github.io/images/jetson-nano/csi_cam_rqt_image_view.png)
 
 #### フレームレートの計測
 
-カメラ映像配信用ROSノードのROSトピックの更新頻度が配信されている映像のフレームレートとほぼ一致します。`rostopic hz`コマンドでROSトピックの更新頻度を確認できます。
+次のコマンドでROSトピックの更新頻度を確認できます。
 
 ```
 rostopic hz /csi_cam_0/image_raw
 ```
 
+カメラ映像のROSトピックの更新頻度 == 配信されている映像のフレームレートではありませんが、ほぼ一致します。
 設定したフレームレートよりも低い場合は以下の原因が考えられます。
 
-* Jetson Nanoの[PowerManagement](https://www.jetsonhacks.com/2019/04/10/jetson-nano-use-more-power/)が省電力モード等パフォーマンスを制限するモードになっている
-* Jetson Nanoから映像受信しているコンピュータ間を接続するネットワークが不安定
-* 接続しているカメラモジュールで取得可能なフレームレートを超えた値を指定した
+* Jetson Nanoの[PowerManagement](https://www.jetsonhacks.com/2019/04/10/jetson-nano-use-more-power/)がパフォーマンスを制限するモードになっている
+* Jetson Nanoと映像を受信しているコンピュータ間のネットワークが不安定
+* 接続しているカメラモジュールの最大フレームレート以上の値を指定した
 
 ### カメラのキャリブレーション
-`jetson_nano_csi_cam`はカメラのキャリブレーションを簡単にできるようにカメラ情報もROSトピックとして配信するようにしています。
-ROS Wikiの[monocular camera calibration guide](http://wiki.ros.org/camera_calibration/Tutorials/MonocularCalibration)に従い、キャリブレーションを行うことができます。その際、以下の情報を参考にしてください。
+`jetson_nano_csi_cam`はカメラのキャリブレーションを簡単にできるようにカメラ情報もROSトピックとして配信しています。  
+カメラ情報を実際に使用しているカメラに合わせるにはROS Wikiの[monocular camera calibration guide](http://wiki.ros.org/camera_calibration/Tutorials/MonocularCalibration)に従ってキャリブレーションしてください。キャリブレーションをしなくてもカメラ映像の配信は可能です。
+その際、以下の情報を参考にしてください。
 
 1. ROS Wikiの説明にあるようにチェッカーボードの印刷が必要です。
 
