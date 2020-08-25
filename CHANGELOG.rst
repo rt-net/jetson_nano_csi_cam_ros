@@ -2,8 +2,8 @@
 Changelog for package jetson_nano_csi_cam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.0 (2020-08-25)
+------------------
 * Update README (`#7 <https://github.com/rt-net/jetson_nano_csi_cam_ros/issues/7>`_)
 * Load the camera calibration parameter by default (`#6 <https://github.com/rt-net/jetson_nano_csi_cam_ros/issues/6>`_)
 * Update README and LICENSE file (`#5 <https://github.com/rt-net/jetson_nano_csi_cam_ros/issues/5>`_)
