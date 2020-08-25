@@ -2,6 +2,8 @@
 
 Jetson Nano DevKit B01 + dual CSI cameraのROSドライバです。
 
+![](https://rt-net.github.io/images/jetson-nano/jetson_nano_dual_csi.jpg)
+
 このROSパッケージはJetson Nano DevKit B01に取り付けたCSI camera（1つまたは2つ）の画像を[GStreamer](https://github.com/GStreamer/gstreamer)または[Jetson Linux Multimedia API](https://docs.nvidia.com/jetson/l4t-multimedia/index.html)経由で取得し、ROSの[sensor_msgs/Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)として配信するためのものです。  
 
 launchファイルで[`gscam`](http://wiki.ros.org/gscam)を呼び出し、GStreamerまたはJetson Linux Multimedia APIを経由して
