@@ -43,6 +43,12 @@ git clone https://github.com/rt-net/jetson_nano_csi_cam_ros.git
 
 ### 2. `gscam`のダウンロードとGStreamer-1.0対応
 
+まずはじめに`gscam`に必要な`gstreamer`の関連パッケージをインストールします。
+
+```
+sudo apt-get install gstreamer1.0-tools libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-good1.0-dev
+```
+
 `gscam`を`catkin_ws`にダウンロードします。
 
 ```
@@ -116,8 +122,6 @@ roslaunch jetson_csi_cam jetson_csi_cam.launch width:=1920 height:=1080 fps:=15
 * **`sensor_id`** (default: `0`) -- カメラのID
 * **`width`** (default: `480`) -- 配信する映像の横幅
 * **`height`** (default: `270`) -- 配信する映像の高さ
-* **`cap_width`** (default: `1920`) -- カメラから取得する映像の横幅
-* **`cap_height`** (default: `1080`) -- カメラから取得する映像の高さ
 * **`fps`** (default: `30`) -- 配信するフレームレート（解像度次第ではこのフレームレートに満たない場合があります）
 * **`cam_name`** (default: `csi_cam_$(arg sensor_id)`) -- `camera info`に対応したカメラ名
 * **`frame_id`** (default: `/$(arg cam_name)_link`) -- tfに使用するカメラのフレーム名

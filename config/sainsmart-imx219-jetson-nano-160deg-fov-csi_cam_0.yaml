@@ -7,7 +7,7 @@ camera_matrix:
   data: [ 420.01343,    0.     ,  254.07253,
             0.     ,  422.67127,  123.39681,
             0.     ,    0.     ,    1.     ]
-distortion_model: 'plumb_bob'
+distortion_model: plumb_bob
 distortion_coefficients:
   rows: 1
   cols: 5
