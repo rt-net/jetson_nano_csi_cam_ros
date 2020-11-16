@@ -120,8 +120,8 @@ roslaunch jetson_csi_cam jetson_csi_cam.launch width:=1920 height:=1080 fps:=15
 ##### `jetson_csi_cam.launch`の引数
 
 * **`sensor_id`** (default: `0`) -- カメラのID
-* **`width`** (default: `480`) -- 配信する映像の横幅
-* **`height`** (default: `270`) -- 配信する映像の高さ
+* **`width`** (default: `640`) -- 配信する映像の横幅
+* **`height`** (default: `480`) -- 配信する映像の高さ
 * **`fps`** (default: `30`) -- 配信するフレームレート（解像度次第ではこのフレームレートに満たない場合があります）
 * **`cam_name`** (default: `csi_cam_$(arg sensor_id)`) -- `camera info`に対応したカメラ名
 * **`frame_id`** (default: `/$(arg cam_name)_link`) -- tfに使用するカメラのフレーム名
