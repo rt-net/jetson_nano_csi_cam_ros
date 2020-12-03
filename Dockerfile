@@ -3,7 +3,7 @@ ARG BASE_IMAGE=ros:melodic-ros-base-l4t-r32.4.4
 ###############################################################################################################################################
 #
 # build
-# $ docker build -t jetson-nano-csi-cam-ros:melodic-l4t-r32.4.4
+# $ docker build -t jetson-nano-csi-cam-ros:melodic-l4t-r32.4.4 .
 #
 # run
 # $ docker run --network host -v /tmp/argus_socket:/tmp/argus_socket --runtime nvidia --rm -it jetson-nano-csi-cam-ros:melodic-l4t-r32.4.4
