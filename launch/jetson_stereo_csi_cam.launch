@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <launch>
   <!-- Command Line Arguments -->
-  <arg name="cam_name_prefix" default="csi_cam_" />         <!-- The name of the camera (corrsponding to the camera info) -->
   <arg name="sync_sink" default="true" />                   <!-- Synchronize the app sink. Setting this to false may resolve problems with sub-par framerates. -->
   <arg name="width" default="480" />                        <!-- Image Width -->
   <arg name="height" default="270" />                       <!-- Image Height -->
@@ -10,8 +9,8 @@
 
   <include file="$(find jetson_nano_csi_cam)/launch/jetson_csi_cam.launch">
     <arg name="sensor_id" value="0" />
-    <arg name="cam_name" value="$(arg cam_name_prefix)0" />
-    <arg name="frame_id" value="/$(arg cam_name_prefix)0_link" />
+    <arg name="cam_name" value="left" />
+    <arg name="frame_id" value="/left_camera_link" />
     <arg name="sync_sink" value="$(arg sync_sink)" />
     <arg name="width" value="$(arg width)" />
     <arg name="height" value="$(arg height)" />
@@ -20,8 +19,8 @@
   </include>
   <include file="$(find jetson_nano_csi_cam)/launch/jetson_csi_cam.launch">
     <arg name="sensor_id" value="1" />
-    <arg name="cam_name" value="$(arg cam_name_prefix)1" />
-    <arg name="frame_id" value="/$(arg cam_name_prefix)1_link" />
+    <arg name="cam_name" value="right" />
+    <arg name="frame_id" value="/right_camera_link" />
     <arg name="sync_sink" value="$(arg sync_sink)" />
     <arg name="width" value="$(arg width)" />
     <arg name="height" value="$(arg height)" />
