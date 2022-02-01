@@ -5,11 +5,12 @@
   <arg name="cam_name" default="csi_cam_$(arg sensor_id)" /> <!-- The name of the camera (corrsponding to the camera info) -->
   <arg name="frame_id" default="/$(arg cam_name)_link" />    <!-- The TF frame ID. -->
   <arg name="sync_sink" default="true" />                    <!-- Synchronize the app sink. Setting this to false may resolve problems with sub-par framerates. -->
-  <arg name="width" default="480" />                         <!-- Image Width to stream -->
-  <arg name="height" default="270" />                        <!-- Image Height to stream -->
-  <arg name="fps" default="30" />                            <!-- Desired framerate. True framerate may not reach this if set too high. -->
+  <arg name="width" default="640" />                         <!-- Image Width to stream -->
+  <arg name="height" default="480" />                        <!-- Image Height to stream -->
+  <arg name="fps" default="20" />                            <!-- Desired framerate. True framerate may not reach this if set too high. -->
   <arg name="flip_method" default="0" />                     <!-- flip_method -->
   <arg name="load_camera_info" default="true" />             <!-- Load the camera info or not-->
+  <arg name="camera_info_url" default="package://jetson_nano_csi_cam/config/sainsmart-imx219-jetson-nano-160deg-fov-$(arg cam_name).yaml" />
 
   <!-- Make arguments available to parameter server -->
   <param name="$(arg cam_name)/camera_id" type="int" value="$(arg sensor_id)" />
@@ -18,8 +19,7 @@
   <param name="$(arg cam_name)/target_fps" type="int" value="$(arg fps)" />
 
   <!-- Define the camera calibration parameter -->
-  <param name="$(arg cam_name)/camera_info_url" type="string" if="$(arg load_camera_info)"
-    value="package://jetson_nano_csi_cam/config/sainsmart-imx219-jetson-nano-160deg-fov-$(arg cam_name).yaml" />
+  <param name="$(arg cam_name)/camera_info_url" type="string" if="$(arg load_camera_info)" value="$(arg camera_info_url)" />
 
   <!-- Define the GSCAM pipeline -->
   <param name="$(arg cam_name)/gscam_config" type="string" value="nvarguscamerasrc sensor-id=$(arg sensor_id) ! video/x-raw(memory:NVMM),
